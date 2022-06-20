@@ -1,0 +1,35 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  namespace: traces
+  name: opentelemetry-agent
+  labels:
+    app.kubernetes.io/name: opentelemetry
+    app.kubernetes.io/component: agent
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: opentelemetry
+      app.kubernetes.io/component: agent
+  policyTypes:
+  - Ingress
+  ingress:
+  - ports:
+    - port: jg-remote-smpl
+      protocol: TCP
+    - port: jg-grpc
+      protocol: TCP
+    - port: jg-trft-compact
+      protocol: UDP
+    - port: jg-trft-binary
+      protocol: UDP
+    - port: zipkin
+      protocol: TCP
+    from:
+    - namespaceSelector:
+        matchExpressions:
+        - key: name
+          operator: Exists
+      podSelector:
+        matchLabels: {}

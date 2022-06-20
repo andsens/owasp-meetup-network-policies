@@ -1,0 +1,33 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  namespace: default
+  name: tracing
+spec:
+  podSelector:
+    matchLabels: {}
+  policyTypes:
+  - Egress
+  egress:
+  - ports:
+    # jg-remote-smpl
+    - port: 5778
+      protocol: TCP
+    # jg-compact-trft
+    - port: 6831
+      protocol: UDP
+    # jg-binary-trft
+    - port: 6832
+      protocol: UDP
+    # zipkin
+    - port: 9411
+      protocol: TCP
+    to:
+    - namespaceSelector:
+        matchLabels:
+          name: traces
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: opentelemetry
+          app.kubernetes.io/component: agent
